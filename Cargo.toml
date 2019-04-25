@@ -1,0 +1,7 @@
+[package]
+name = "rust-brainfuck"
+version = "0.1.0"
+authors = ["simpu <utkarsh.email@yahoo.com>"]
+edition = "2018"
+
+[dependencies]
