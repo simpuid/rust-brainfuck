@@ -15,6 +15,18 @@ enum Braces {
 
 pub struct TokenProgram {
     pub tokens: Vec<Token>,
+    counter: usize,
+}
+
+impl TokenProgram {
+    pub fn reset(&mut self) {
+        self.counter = 0;
+    }
+    pub fn next(&mut self) -> Option<&Token> {
+        let tmp = self.tokens.get(self.counter);
+        self.counter += 1;
+        return tmp;
+    }
 }
 
 pub fn parse(data: &str) -> Result<TokenProgram, String> {
@@ -90,7 +102,10 @@ pub fn parse(data: &str) -> Result<TokenProgram, String> {
         column += 1;
     }
     if braces.len() == 0 {
-        return Ok(TokenProgram { tokens: tokens });
+        return Ok(TokenProgram {
+            tokens: tokens,
+            counter: 0,
+        });
     } else {
         let mut positions = String::new();
         for b in braces {
