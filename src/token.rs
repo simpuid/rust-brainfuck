@@ -6,18 +6,22 @@ pub enum Token {
     Start,
     End,
 }
+
 enum Braces {
     Left(usize, usize),
     Right(usize, usize),
 }
+
 pub struct TokenProgram {
     pub tokens: Vec<Token>,
     counter: usize,
 }
+
 impl TokenProgram {
     pub fn reset(&mut self) {
         self.counter = 0;
     }
+
     pub fn next(&mut self) -> Option<&Token> {
         let tmp = self.tokens.get(self.counter);
         self.counter += 1;

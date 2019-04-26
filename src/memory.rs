@@ -3,6 +3,7 @@ pub struct Memory {
     pub backward: Vec<u8>,
     pub pointer: isize,
 }
+
 impl Memory {
     pub fn new() -> Memory {
         return Memory {
@@ -11,6 +12,7 @@ impl Memory {
             pointer: 0,
         };
     }
+
     pub fn move_pointer(&mut self, delta: isize) {
         if delta == 0 {
             return;
@@ -27,6 +29,7 @@ impl Memory {
             self.backward.push(0);
         }
     }
+
     pub fn get_data(&self) -> u8 {
         let mut result = self.foreward.get(self.pointer as usize);
         if self.pointer < 0 {
@@ -37,6 +40,7 @@ impl Memory {
             None => (0),
         }
     }
+
     pub fn set_data(&mut self, data: u8) {
         let mut result = self.foreward.get_mut(self.pointer as usize);
         if self.pointer < 0 {

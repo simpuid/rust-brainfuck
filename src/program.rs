@@ -13,6 +13,7 @@ pub enum Statement {
 pub struct Program {
     pub block: Statement,
 }
+
 impl Statement {
     fn execute(&self, memory: &mut Memory) {
         match self {
