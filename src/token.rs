@@ -1,23 +1,19 @@
-#[derive(Debug)]
 pub enum Token {
     Move(isize),
     Change(isize),
-    Input(usize),
-    Output(usize),
+    Input,
+    Output,
     Start,
     End,
 }
-#[derive(Debug)]
 enum Braces {
     Left(usize, usize),
     Right(usize, usize),
 }
-
 pub struct TokenProgram {
     pub tokens: Vec<Token>,
     counter: usize,
 }
-
 impl TokenProgram {
     pub fn reset(&mut self) {
         self.counter = 0;
@@ -42,55 +38,33 @@ pub fn parse(data: &str) -> Result<TokenProgram, String> {
             }
             ']' => {
                 tokens.push(Token::End);
-                if let Some(e) = braces.last() {
-                    if let Braces::Left(_, _) = e {
-                        braces.pop();
-                    } else {
-                        braces.push(Braces::Right(line, column));
-                    }
+                if let Some(Braces::Left(_, _)) = braces.last() {
+                    braces.pop();
                 } else {
                     braces.push(Braces::Right(line, column));
                 }
             }
             '>' | '<' => {
                 let mut delta: isize = 0;
-                if let Some(s) = tokens.last() {
-                    if let Token::Move(d) = s {
-                        delta = *d;
-                        tokens.pop();
-                    }
+                if let Some(Token::Move(d)) = tokens.last() {
+                    delta = *d;
+                    tokens.pop();
                 }
                 tokens.push(Token::Move(delta + if c == '<' { -1 } else { 1 }));
             }
             '+' | '-' => {
                 let mut delta: isize = 0;
-                if let Some(s) = tokens.last() {
-                    if let Token::Change(d) = s {
-                        delta = *d;
-                        tokens.pop();
-                    }
+                if let Some(Token::Change(d)) = tokens.last() {
+                    delta = *d;
+                    tokens.pop();
                 }
                 tokens.push(Token::Change(delta + if c == '-' { -1 } else { 1 }));
             }
             '.' => {
-                let mut delta: usize = 0;
-                if let Some(s) = tokens.last() {
-                    if let Token::Output(d) = s {
-                        delta = *d;
-                        tokens.pop();
-                    }
-                }
-                tokens.push(Token::Output(delta + 1));
+                tokens.push(Token::Output);
             }
             ',' => {
-                let mut delta: usize = 0;
-                if let Some(s) = tokens.last() {
-                    if let Token::Input(d) = s {
-                        delta = *d;
-                        tokens.pop();
-                    }
-                }
-                tokens.push(Token::Input(delta + 1));
+                tokens.push(Token::Input);
             }
             '\n' => {
                 line += 1;
@@ -110,13 +84,11 @@ pub fn parse(data: &str) -> Result<TokenProgram, String> {
         let mut positions = String::new();
         for b in braces {
             match b {
-                Braces::Left(line, column) | Braces::Right(line, column) => {
-                    positions += &format!(
-                        "\t{} at line:{} column:{}\n",
-                        if let Braces::Left(_, _) = b { '[' } else { ']' },
-                        line,
-                        column
-                    )[..]
+                Braces::Left(line, column) => {
+                    positions += &format!("\t'[' @ line:{} column:{}\n", line, column)[..]
+                }
+                Braces::Right(line, column) => {
+                    positions += &format!("\t']' @ line:{} column:{}\n", line, column)[..]
                 }
             }
         }

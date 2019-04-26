@@ -3,29 +3,24 @@ mod files;
 mod memory;
 mod program;
 mod token;
-use args::*;
-use files::*;
-use memory::*;
-use program::*;
 use std::process;
-use token::*;
 
 fn main() {
-    let config = extract(get_config(), "Argument Error");
+    let config = extract(args::get_config(), "Argument Error");
 
-    let mut files: Vec<File> = Vec::new();
+    let mut files: Vec<files::File> = Vec::new();
     for name in &config.files {
-        files.push(extract(get_file(&name), "IO Error"));
+        files.push(extract(files::get_file(&name), "IO Error"));
     }
 
-    let mut token_program: Vec<TokenProgram> = Vec::new();
+    let mut token_program: Vec<token::TokenProgram> = Vec::new();
     for f in files {
-        token_program.push(extract(parse(&f.data), "Parse Error"));
+        token_program.push(extract(token::parse(&f.data), "Parse Error"));
     }
 
     for mut p in token_program {
-        let program = get_program(&mut p);
-        let mut l = Memory::new();
+        let program = program::get_program(&mut p);
+        let mut l = memory::Memory::new();
         program.run(&mut l);
     }
 }
